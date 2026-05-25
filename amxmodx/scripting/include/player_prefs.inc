@@ -5,6 +5,11 @@
 
 #pragma reqlib player_prefs_core
 
+// TODO: docs
+forward pp_initialized(const bool:bSuccess);
+forward pp_player_loaded(const playerIndex);
+forward pp_player_saved(const playerIndex);
+
 /**
  * Возвращает true, если предпочтения игрока загружены из провайдера
  * и готовы к использованию.

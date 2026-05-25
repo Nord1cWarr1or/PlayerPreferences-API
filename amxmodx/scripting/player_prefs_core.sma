@@ -27,7 +27,7 @@ new g_iProviderForwards[ProviderForward];
 
 public plugin_init()
 {
-  register_plugin("Player Prefs Core", "1.0.0", "ufame");
+  register_plugin("Player Prefs Core", "1.0.1", "ufame");
 
   g_tKeyDefaults = TrieCreate();
 
