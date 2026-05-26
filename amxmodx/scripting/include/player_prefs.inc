@@ -5,114 +5,222 @@
 
 #pragma reqlib player_prefs_core
 
-// TODO: docs
-forward pp_initialized(const bool:bSuccess);
-forward pp_player_loaded(const playerIndex);
-forward pp_player_saved(const playerIndex);
+/**
+ * Called once after the core and provider finish initialization.
+ *
+ * This is the correct place to call pp_register_key().
+ * If success is false the provider failed to connect;
+ * keys can still be registered in memory but nothing will
+ * be persisted to storage.
+ *
+ * @param success   true if the storage provider is ready.
+ */
+forward pp_initialized(bool: success);
 
 /**
- * Возвращает true, если предпочтения игрока загружены из провайдера
- * и готовы к использованию.
+ * Called when all preferences for a player have been loaded
+ * from storage and are ready to read.
  *
- * @param playerIndex  Индекс игрока (1..MAX_PLAYERS).
- * @return         true — загружен, false — нет.
+ * @param playerIndex   Player index (1..MAX_PLAYERS).
  */
-native bool: pp_is_loaded(const playerIndex);
+forward pp_player_loaded(playerIndex);
 
 /**
- * Получает строковое предпочтение игрока.
- * Если значение не задано — возвращает дефолтное значение ключа.
+ * Called after a player's preference has been written to storage.
  *
- * @param playerIndex   Индекс игрока.
- * @param szKey     Имя ключа.
- * @param szDest    Буфер для результата.
- * @param iDestLen  Длина буфера.
- * @return          true при успехе.
+ * @param playerIndex   Player index.
  */
-native bool: pp_get_string(const playerIndex, const szKey[], szDest[], iDestLen);
+forward pp_player_saved(playerIndex);
 
 /**
- * Получает целочисленное предпочтение игрока.
- * Если значение не задано — возвращает iDefault.
+ * Returns true if the player's preferences are fully loaded
+ * from storage and safe to read or write.
  *
- * @param playerIndex   Индекс игрока.
- * @param szKey     Имя ключа.
- * @param iDefault  Значение по умолчанию.
- * @return          Значение предпочтения или iDefault.
+ * @param playerIndex   Player index (1..MAX_PLAYERS).
+ * @return              true if loaded.
  */
-native pp_get_int(const playerIndex, const szKey[], iDefault = 0);
+native bool: pp_is_loaded(playerIndex);
 
 /**
- * Получает float-предпочтение игрока.
+ * Gets the player's string preference.
+ * Falls back to the key's registered default if no value is stored.
  *
- * @param playerIndex   Индекс игрока.
- * @param szKey     Имя ключа.
- * @param flDefault Значение по умолчанию.
- * @return          Значение предпочтения или flDefault.
+ * @param playerIndex   Player index.
+ * @param key           Preference key name.
+ * @param dest          Destination buffer.
+ * @param destLen       Size of the destination buffer.
+ * @return              true on success.
  */
-native Float: pp_get_float(const playerIndex, const szKey[], Float: flDefault = 0.0);
+native bool: pp_get_string(playerIndex, const key[], dest[], destLen);
 
 /**
- * Получает булево предпочтение игрока.
+ * Gets the player's integer preference.
+ * Falls back to defaultValue if no value is stored.
  *
- * @param playerIndex   Индекс игрока.
- * @param szKey     Имя ключа.
- * @param bDefault  Значение по умолчанию.
- * @return          true/false.
+ * @param playerIndex   Player index.
+ * @param key           Preference key name.
+ * @param defaultValue  Value returned when nothing is stored.
+ * @return              Stored value or defaultValue.
  */
-native bool: pp_get_bool(const playerIndex, const szKey[], bool: bDefault = false);
+native pp_get_int(playerIndex, const key[], defaultValue = 0);
 
 /**
- * Устанавливает строковое предпочтение игрока.
- * Значение сохраняется в памяти немедленно и асинхронно пишется в провайдер.
+ * Gets the player's float preference.
+ * Falls back to defaultValue if no value is stored.
  *
- * @param playerIndex        Индекс игрока.
- * @param szKey          Имя ключа.
- * @param szValue        Новое значение.
- * @param szDefaultValue Дефолтное значение ключа (для регистрации ключа в провайдере).
- * @return               true при успехе.
+ * @param playerIndex   Player index.
+ * @param key           Preference key name.
+ * @param defaultValue  Value returned when nothing is stored.
+ * @return              Stored value or defaultValue.
  */
-native bool: pp_set_string(const playerIndex, const szKey[], const szValue[], const szDefaultValue[] = "");
+native Float: pp_get_float(playerIndex, const key[], Float: defaultValue = 0.0);
 
 /**
- * Устанавливает целочисленное предпочтение игрока.
+ * Gets the player's boolean preference.
+ * Falls back to defaultValue if no value is stored.
  *
- * @param playerIndex        Индекс игрока.
- * @param szKey          Имя ключа.
- * @param iValue         Новое значение.
- * @param iDefault       Дефолтное значение ключа.
- * @return               true при успехе.
+ * @param playerIndex   Player index.
+ * @param key           Preference key name.
+ * @param defaultValue  Value returned when nothing is stored.
+ * @return              Stored value or defaultValue.
  */
-native bool: pp_set_int(const playerIndex, const szKey[], iValue, iDefault = 0);
+native bool: pp_get_bool(playerIndex, const key[], bool: defaultValue = false);
 
 /**
- * Устанавливает float-предпочтение игрока.
+ * Sets the player's string preference.
  *
- * @param playerIndex        Индекс игрока.
- * @param szKey          Имя ключа.
- * @param flValue        Новое значение.
- * @param flDefault      Дефолтное значение ключа.
- * @return               true при успехе.
+ * @param playerIndex   Player index.
+ * @param key           Preference key name.
+ * @param value         New value.
+ * @param defaultValue  Default forwarded to the provider for key registration.
+ * @return              true on success.
  */
-native bool: pp_set_float(const playerIndex, const szKey[], Float: flValue, Float: flDefault = 0.0);
+native bool: pp_set_string(playerIndex, const key[], const value[], const defaultValue[] = "");
 
 /**
- * Устанавливает булево предпочтение игрока.
+ * Sets the player's integer preference.
  *
- * @param playerIndex        Индекс игрока.
- * @param szKey          Имя ключа.
- * @param bValue         Новое значение.
- * @param bDefault       Дефолтное значение ключа.
- * @return               true при успехе.
+ * @param playerIndex   Player index.
+ * @param key           Preference key name.
+ * @param value         New value.
+ * @param defaultValue  Default forwarded to the provider for key registration.
+ * @return              true on success.
  */
-native bool: pp_set_bool(const playerIndex, const szKey[], bool: bValue, bool: bDefault = false);
+native bool: pp_set_int(playerIndex, const key[], value, defaultValue = 0);
 
 /**
- * Регистрирует ключ и его дефолтное значение в провайдере.
- * Вызывать из pp_initialized при bSuccess == true.
+ * Sets the player's float preference.
  *
- * @param szKey          Имя ключа.
- * @param szDefaultValue Строковое дефолтное значение.
- * @return               true при успехе.
+ * @param playerIndex   Player index.
+ * @param key           Preference key name.
+ * @param value         New value.
+ * @param defaultValue  Default forwarded to the provider for key registration.
+ * @return              true on success.
  */
-native bool: pp_register_key(const szKey[], const szDefaultValue[] = "");
+native bool: pp_set_float(playerIndex, const key[], Float: value, Float: defaultValue = 0.0);
+
+/**
+ * Sets the player's boolean preference.
+ *
+ * @param playerIndex   Player index.
+ * @param key           Preference key name.
+ * @param value         New value.
+ * @param defaultValue  Default forwarded to the provider for key registration.
+ * @return              true on success.
+ */
+native bool: pp_set_bool(playerIndex, const key[], bool: value, bool: defaultValue = false);
+
+/**
+ * Registers a key and its default value with the active provider.
+ *
+ * Call from pp_initialized. Safe to call multiple times —
+ * subsequent calls update the stored default value.
+ *
+ * @param key           Preference key name.
+ * @param defaultValue  String representation of the default value.
+ * @return              true on success.
+ */
+native bool: pp_register_key(const key[], const defaultValue[] = "");
+
+/**
+ * Core requests the provider to open the storage connection.
+ * Must finish by calling pp_provider_ready() exactly once.
+ */
+forward pp_provider_connect();
+
+/**
+ * Core requests the provider to load all known keys from storage.
+ * Call pp_provider_key_loaded() for each key,
+ * then pp_provider_keys_done() when done.
+ */
+forward pp_provider_load_keys();
+
+/**
+ * Core requests the provider to load all preferences for a player.
+ * Call pp_provider_pref_loaded() for each stored key/value pair,
+ * then pp_provider_player_done() when done (even if nothing was found).
+ *
+ * @param playerIndex   Player index.
+ * @param authId        Player's SteamID string.
+ */
+forward pp_provider_load_player(playerIndex, const authId[]);
+
+/**
+ * Core requests the provider to persist one preference for a player.
+ *
+ * @param playerIndex   Player index.
+ * @param authId        Player's SteamID string.
+ * @param key           Preference key name.
+ * @param value         String value to store.
+ */
+forward pp_provider_save_pref(playerIndex, const authId[], const key[], const value[]);
+
+/**
+ * Core requests the provider to register or update a key's default value.
+ *
+ * @param key           Preference key name.
+ * @param defaultValue  Default value string.
+ */
+forward pp_provider_register_key(const key[], const defaultValue[]);
+
+/**
+ * Reports the result of the connection attempt to the core.
+ * Must be called exactly once after pp_provider_connect fires.
+ *
+ * @param success   true if the storage is open and ready.
+ */
+native pp_provider_ready(bool: success);
+
+/**
+ * Passes one key from storage to the core.
+ * Call inside the pp_provider_load_keys handler, once per key.
+ *
+ * @param key           Preference key name.
+ * @param defaultValue  Stored default value for this key.
+ */
+native pp_provider_key_loaded(const key[], const defaultValue[]);
+
+/**
+ * Signals that all keys have been delivered to the core.
+ * Must be called once, after the last pp_provider_key_loaded call.
+ */
+native pp_provider_keys_done();
+
+/**
+ * Passes one stored preference for a player to the core.
+ * Call inside the pp_provider_load_player handler, once per pair.
+ *
+ * @param playerIndex   Player index.
+ * @param key           Preference key name.
+ * @param value         Stored value string.
+ */
+native pp_provider_pref_loaded(playerIndex, const key[], const value[]);
+
+/**
+ * Signals that all preferences for a player have been delivered.
+ * Must be called once — after the last pp_provider_pref_loaded call,
+ * or immediately if the player has no stored preferences.
+ *
+ * @param playerIndex   Player index.
+ */
+native pp_provider_player_done(playerIndex);
