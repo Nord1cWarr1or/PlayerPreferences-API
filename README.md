@@ -10,13 +10,16 @@ Load **core** first, then exactly one provider:
  
 ```
 player_prefs_core.amxx
-player_prefs_mysql.amxx    ; or flute
+player_prefs_mysql.amxx
+;player_prefs_flute.amxx
+;player_prefs_nvault.amxx
 ```
 
 | Provider | Config file |
 |----------|-------------|
-| MySQL | `configs/player_prefs_mysql.json` → `host`, `user`, `pass`, `db` |
-| Flute | `configs/player_prefs_flute.json` → `url`, `token`, `server_id`, `timeout` |
+| MySQL  | `configs/player_prefs_mysql.json` → `host`, `user`, `pass`, `db` |
+| Flute  | `configs/player_prefs_flute.json` → `url`, `token`, `server_id`, `timeout` |
+| nVault | `configs/player_prefs_nvault.json` → `name`, `prune_days` |
 
 For Flute provider need a [Flute-PlayerPreferences](https://github.com/AmxxModularEcosystem/Flute-PlayerPreferences) module.
 
