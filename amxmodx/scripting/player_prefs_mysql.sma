@@ -62,6 +62,10 @@ public pp_provider_load_player(const playerIndex, const authId[])
 
 public pp_provider_save_pref(const playerIndex, const authId[], const key[], const value[])
 {
+  new safeKey[MAX_KEY_LENGTH * 2], safeValue[MAX_VALUE_LENGTH * 2];
+  QuoteString(key, safeKey, charsmax(safeKey));
+  QuoteString(value, safeValue, charsmax(safeValue));
+
   formatex(g_szQuery, charsmax(g_szQuery),
     "INSERT IGNORE INTO `pp_keys` (`key`, `default_value`) VALUES ('%s', ''); \
     INSERT INTO `pp_preferences` (`player_id`, `key_id`, `value`) \
@@ -70,9 +74,9 @@ public pp_provider_save_pref(const playerIndex, const authId[], const key[], con
       JOIN `pp_keys` k ON k.`key` = '%s' \
       WHERE pl.`authid` = '%s' \
     ON DUPLICATE KEY UPDATE `value` = VALUES(`value`);",
-    key,
-    value,
-    key,
+    safeKey,
+    safeValue,
+    safeKey,
     authId
   );
 
@@ -85,10 +89,14 @@ public pp_provider_save_pref(const playerIndex, const authId[], const key[], con
 
 public pp_provider_register_key(const key[], const defaultValue[])
 {
+  new safeKey[MAX_KEY_LENGTH * 2], safeDefault[MAX_VALUE_LENGTH * 2];
+  QuoteString(key, safeKey, charsmax(safeKey));
+  QuoteString(defaultValue, safeDefault, charsmax(safeDefault));
+
   formatex(g_szQuery, charsmax(g_szQuery),
     "INSERT INTO `pp_keys` (`key`, `default_value`) VALUES ('%s', '%s') \
     ON DUPLICATE KEY UPDATE `default_value` = VALUES(`default_value`);",
-    key, defaultValue
+    safeKey, safeDefault
   );
 
   SQL_ThreadQuery(g_hSqlTuple, "OnRegisterKeyResult", g_szQuery);
@@ -210,7 +218,7 @@ InsertPlayer(playerIndex, userid, queryData[], dataSize)
   get_user_authid(playerIndex, authId, charsmax(authId));
 
   formatex(g_szQuery, charsmax(g_szQuery),
-    "INSERT INTO `pp_players` (`authid`) VALUES ('%s');",
+    "INSERT IGNORE INTO `pp_players` (`authid`) VALUES ('%s');",
     authId
   );
 
@@ -231,6 +239,13 @@ QueryPlayerPrefs(queryData[], dataSize)
   );
 
   SQL_ThreadQuery(g_hSqlTuple, "OnLoadPrefsResult", g_szQuery, queryData, dataSize);
+}
+
+// Keys and values come from plugins as is: a quote in a string value would break the statement.
+QuoteString(const source[], dest[], const destLen)
+{
+  if (SQL_QuoteString(Empty_Handle, dest, destLen, source) == -1)
+    copy(dest, destLen, "");
 }
 
 bool: IsSessionValid(const playerIndex, const userid)
