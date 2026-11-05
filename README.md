@@ -13,6 +13,7 @@ player_prefs_core.amxx
 player_prefs_mysql.amxx
 ;player_prefs_flute.amxx
 ;player_prefs_nvault.amxx
+;player_prefs_sqlite.amxx
 ```
 
 | Provider | Config file |
@@ -20,6 +21,7 @@ player_prefs_mysql.amxx
 | MySQL  | `configs/player_prefs_mysql.json` → `host`, `user`, `pass`, `db` |
 | Flute  | `configs/player_prefs_flute.json` → `url`, `token`, `server_id`, `timeout` |
 | nVault | `configs/player_prefs_nvault.json` → `name`, `prune_days` |
+| SQLite | none (database `addons/amxmodx/data/sqlite3/player_prefs.sq3`) |
 
 For Flute provider need a [Flute-PlayerPreferences](https://github.com/AmxxModularEcosystem/Flute-PlayerPreferences) module.
 
